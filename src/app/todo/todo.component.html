@@ -1,26 +1,66 @@
-<form class="form">
-  <h2 class="h2">TODO List</h2>
-  <p class="place">A place to store your todos</p>
-
-  <ol class="list">
-    <input type="text" placeholder="Filter your to-dos" class="input" />
-    <li
-      *ngFor="let todo of todos"
-      [ngClass]="{ strikethrough: todo.completed }"
-      class="li"
+<main class="main">
+  <section class="todo-container">
+    <h1>TODO List</h1>
+    <h2 class="h2">A place to store your todos</h2>
+    <form class="form" #filterForm="ngForm" (input)="setSearchTerm(filterForm)">
+      <input
+        type="text"
+        class="input"
+        name="searchTerm"
+        placeholder="Filter your to-dos"
+        ngModel
+      />
+    </form>
+    <p *ngIf="todos.length === 0" class="enter-some">
+      ENTER A FEW NEW TO-DOs!
+    </p>
+    <ol class="ordered-list">
+      <li *ngFor="let todo of filter(); index as i">
+        <div class="list-item">
+          <button
+            *ngIf="todo.completed === false"
+            class="complete"
+            (click)="completeTask(i)"
+          >
+            Complete
+          </button>
+          <p
+            class="task"
+            *ngIf="showIndex !== i"
+            [ngClass]="{ strike: todo.completed }"
+            (click)="setShowIndex(i)"
+          >
+            {{ todo.task }}
+          </p>
+          <form *ngIf="showIndex === i" (ngSubmit)="resetShowIndex()">
+            <input
+              class="update"
+              type="text"
+              name="update"
+              id="update"
+              [(ngModel)]="todo.task"
+            />
+          </form>
+          <button class="x" (click)="deleteTask(i)">
+            X
+          </button>
+        </div>
+      </li>
+    </ol>
+    <form
+      class="form"
+      #addForm="ngForm"
+      (ngSubmit)="submitTask(addForm); addForm.reset()"
     >
-      <button
-        *ngIf="todo.completed === false"
-        [ngClass]="hide"
-        class="complete"
-      >
-        Complete
-      </button>
-      {{ todo.task }}
-      <button class="x">X</button>
-    </li>
-    <p *ngIf="todos.length === 0">Nothing to do!</p>
-    <input type="text" placeholder="Add your to-do" class="input" />
-    <button class="add">Add</button>
-  </ol>
-</form>
+      <input
+        type="text"
+        class="input"
+        id="task"
+        name="task"
+        placeholder="Add your to-do"
+        ngModel
+      />
+      <button class="add">Add</button>
+    </form>
+  </section>
+</main>
